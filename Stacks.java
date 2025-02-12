@@ -8,23 +8,25 @@ public class Stacks {
             // Ask for stack size
             System.out.print("Enter the size of the stack: ");
             int size = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
 
-            ClassOfStacks.Stack stack = new ClassOfStacks.Stack(size);
+            ClassOfStacks.StringStack stack = new ClassOfStacks.StringStack(size);
 
             while (true) {
                 // Menu
                 System.out.println("\nChoose an operation:");
-                System.out.println("1 - PUSH");
-                System.out.println("2 - POP");
+                System.out.println("1 - PUSH (Insert)");
+                System.out.println("2 - POP (Delete)");
                 System.out.println("3 - DISPLAY");
                 System.out.println("4 - EXIT");
 
                 int choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
 
                 switch (choice) {
                     case 1:
-                        System.out.print("Enter value to push: ");
-                        int value = scanner.nextInt();
+                        System.out.print("Enter string to push: ");
+                        String value = scanner.nextLine();
                         stack.push(value);
                         break;
                     case 2:
