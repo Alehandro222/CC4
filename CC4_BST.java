@@ -1,50 +1,18 @@
-package CC4;
 import java.util.*;
 public class CC4_BST {
-    static class AVLTree {
+
+    static class BST {
         static class Node {
-            int key, height;
+            int key;
             Node left, right;
 
             Node(int d) {
                 key = d;
-                height = 1;
+                left = right = null;
             }
         }
 
         Node root;
-
-        int height(Node N) {
-            return (N == null) ? 0 : N.height;
-        }
-
-        int getBalance(Node N) {
-            return (N == null) ? 0 : height(N.left) - height(N.right);
-        }
-
-        Node rightRotate(Node y) {
-            Node x = y.left;
-            Node T2 = x.right;
-            x.right = y;
-            y.left = T2;
-            updateHeight(y);
-            updateHeight(x);
-            return x;
-        }
-
-        Node leftRotate(Node x) {
-            Node y = x.right;
-            Node T2 = y.left;
-            y.left = x;
-            x.right = T2;
-            updateHeight(x);
-            updateHeight(y);
-            return y;
-        }
-
-        void updateHeight(Node node) {
-            node.height = Math.max(height(node.left), height(node.right)) + 1;
-        }
 
         Node insert(Node node, int key) {
             if (node == null) return new Node(key);
@@ -52,11 +20,7 @@ public class CC4_BST {
                 node.left = insert(node.left, key);
             else if (key > node.key)
                 node.right = insert(node.right, key);
-            else
-                return node;
-
-            updateHeight(node);
-            return rebalance(node);
+            return node;
         }
 
         Node deleteNode(Node root, int key) {
@@ -67,46 +31,19 @@ public class CC4_BST {
             else if (key > root.key)
                 root.right = deleteNode(root.right, key);
             else {
-                if (root.left == null || root.right == null) {
-                    root = (root.left != null) ? root.left : root.right;
-                } else {
-                    Node temp = minValueNode(root.right);
-                    root.key = temp.key;
-                    root.right = deleteNode(root.right, temp.key);
-                }
+                if (root.left == null) return root.right;
+                else if (root.right == null) return root.left;
+                Node temp = minValueNode(root.right);
+                root.key = temp.key;
+                root.right = deleteNode(root.right, temp.key);
             }
-
-            if (root == null) return root;
-
-            updateHeight(root);
-            return rebalance(root);
+            return root;
         }
 
         Node minValueNode(Node node) {
             while (node.left != null)
                 node = node.left;
             return node;
-        }
-
-        Node rebalance(Node A) {
-            int balance = getBalance(A);
-
-            if (balance > 1) {
-                if (getBalance(A.left) >= 0) return rightRotate(A);
-                else {
-                    A.left = leftRotate(A.left);
-                    return rightRotate(A);
-                }
-            }
-            if (balance < -1) {
-                if (getBalance(A.right) <= 0) return leftRotate(A);
-                else {
-                    A.right = rightRotate(A.right);
-                    return leftRotate(A);
-                }
-            }
-
-            return A;
         }
 
         void preorder(Node node) {
@@ -139,7 +76,7 @@ public class CC4_BST {
             while (!arr.isEmpty() && arr.get(arr.size() - 1) == 0) {
                 arr.remove(arr.size() - 1);
             }
-            System.out.print("int AVL[" + arr.size() + "] = {");
+            System.out.print("int BST[" + arr.size() + "] = {");
             for (int i = 0; i < arr.size(); i++) {
                 System.out.print(arr.get(i));
                 if (i < arr.size() - 1) System.out.print(", ");
@@ -178,11 +115,11 @@ public class CC4_BST {
 
         public static void main(String[] args) {
             Scanner scanner = new Scanner(System.in);
-            AVLTree tree = new AVLTree();
+            BST tree = new BST();
             char choice;
 
             do {
-                System.out.println("\nAVL Tree Operations:");
+                System.out.println("\nBST Operations:");
                 System.out.println("1. Insert");
                 System.out.println("2. Delete");
                 System.out.println("3. Exit");
@@ -195,14 +132,14 @@ public class CC4_BST {
                         System.out.print("Enter number to insert: ");
                         int insertVal = scanner.nextInt();
                         tree.root = tree.insert(tree.root, insertVal);
-                        System.out.println("AVL Tree after insertion:");
+                        System.out.println("BST after insertion:");
                         tree.printTreeData();
                         break;
                     case 2:
                         System.out.print("Enter number to delete: ");
                         int deleteVal = scanner.nextInt();
                         tree.root = tree.deleteNode(tree.root, deleteVal);
-                        System.out.println("AVL Tree after deletion:");
+                        System.out.println("BST after deletion:");
                         tree.printTreeData();
                         break;
                     case 3:
