@@ -103,6 +103,78 @@ class AVLTree {
         return node;
     }
 
+    // Delete a node
+    public AVLNode delete(AVLNode root, int key) {
+        if (root == null)
+            return root;
+
+        // Perform normal BST delete
+        if (key < root.key)
+            root.left = delete(root.left, key);
+        else if (key > root.key)
+            root.right = delete(root.right, key);
+        else {
+            // Node to be deleted is found
+            if ((root.left == null) || (root.right == null)) {
+                AVLNode temp = null;
+                if (temp == root.left)
+                    temp = root.right;
+                else
+                    temp = root.left;
+
+                if (temp == null) {
+                    temp = root;
+                    root = null;
+                } else
+                    root = temp; // Copy the contents of the non-empty child
+            } else {
+                AVLNode temp = minValueNode(root.right);
+                root.key = temp.key;
+                root.right = delete(root.right, temp.key); // Delete the inorder successor
+            }
+        }
+
+        // If the tree has only one node, return it
+        if (root == null)
+            return root;
+
+        // Update height of the current node
+        root.height = Math.max(height(root.left), height(root.right)) + 1;
+
+        // Get balance factor of this node
+        int balance = getBalance(root);
+
+        // Left Left Case
+        if (balance > 1 && getBalance(root.left) >= 0)
+            return rightRotate(root);
+
+        // Left Right Case
+        if (balance > 1 && getBalance(root.left) < 0) {
+            root.left = leftRotate(root.left);
+            return rightRotate(root);
+        }
+
+        // Right Right Case
+        if (balance < -1 && getBalance(root.right) <= 0)
+            return leftRotate(root);
+
+        // Right Left Case
+        if (balance < -1 && getBalance(root.right) > 0) {
+            root.right = rightRotate(root.right);
+            return leftRotate(root);
+        }
+
+        return root;
+    }
+
+    // Get the node with the minimum value
+    public AVLNode minValueNode(AVLNode node) {
+        AVLNode current = node;
+        while (current.left != null)
+            current = current.left;
+        return current;
+    }
+
     // Preorder Traversal
     public void preorder(AVLNode node) {
         if (node == null)
@@ -161,6 +233,10 @@ class AVLTree {
         root = insert(root, key);
     }
 
+    public void delete(int key) {
+        root = delete(root, key);
+    }
+
     public AVLNode getRoot() {
         return root;
     }
@@ -172,11 +248,20 @@ public class Main {
         AVLTree tree = new AVLTree();
 
         while (true) {
-            System.out.print("Enter a series of integers separated by spaces: ");
-            String[] numbers = scanner.nextLine().split("\\s+");
+            System.out.print("Enter a series of integers separated by spaces (or type 'delete' to delete a node): ");
+            String input = scanner.nextLine();
 
-            for (String num : numbers) {
-                tree.insert(Integer.parseInt(num));
+            if (input.equalsIgnoreCase("delete")) {
+                System.out.print("Enter the integer to delete: ");
+                int deleteKey = scanner.nextInt();
+                scanner.nextLine();  // Consume the newline
+                tree.delete(deleteKey);
+                System.out.println("Node deleted successfully!");
+            } else {
+                String[] numbers = input.split("\\s+");
+                for (String num : numbers) {
+                    tree.insert(Integer.parseInt(num));
+                }
             }
 
             // Display the 1-D array representation
@@ -208,3 +293,5 @@ public class Main {
         scanner.close();
     }
 }
+
+
